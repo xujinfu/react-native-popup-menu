@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import { render } from './helpers';
+import { render, normalizeStyle } from './helpers';
 import { MenuOptions, MenuTrigger } from '../src/index';
 import MenuOutside from '../src/renderers/MenuOutside';
 import Backdrop from '../src/Backdrop';
@@ -223,6 +223,38 @@ describe('MenuContext', () => {
     expect(backdrop.type).toEqual(Backdrop);
     backdrop.props.onPress();
     expect(menu1.props.onBackdropPress).toHaveBeenCalled();
+  });
+
+  it('should render menu and backdrop with z-index', () => {
+    const zIndex = 500;
+    const config = { zIndex };
+    const { output: initOutput, instance, renderer } = render(
+      <MenuContext config={config} />
+    );
+    const { menuRegistry, menuActions } = instance.getChildContext();
+    initOutput.props.onLayout(defaultLayout);
+    menuRegistry.subscribe(menu1);
+    menuActions.openMenu('menu1');
+    const output = renderer.getRenderOutput();
+    expect(output.props.children.length).toEqual(3);
+    const [ components, backdrop, options ] = output.props.children; // eslint-disable-line no-unused-vars
+    expect(backdrop.props.zIndex).toEqual(500);
+    expect(normalizeStyle(options.props.style)).toEqual(objectContaining({ zIndex }));
+  });
+
+  it('should not add z-index', () => {
+    const { output: initOutput, instance, renderer } = render(
+      <MenuContext />
+    );
+    const { menuRegistry, menuActions } = instance.getChildContext();
+    initOutput.props.onLayout(defaultLayout);
+    menuRegistry.subscribe(menu1);
+    menuActions.openMenu('menu1');
+    const output = renderer.getRenderOutput();
+    expect(output.props.children.length).toEqual(3);
+    const [ components, backdrop, options ] = output.props.children; // eslint-disable-line no-unused-vars
+    expect(normalizeStyle(backdrop.props.zIndex)).toEqual(undefined);
+    expect('zIndex' in normalizeStyle(options.props.style)).toEqual(false);
   });
 
 });

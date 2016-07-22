@@ -87,6 +87,7 @@ export default class MenuContext extends Component {
 
   render() {
     const shouldRenderMenu = this.isMenuOpen() && this._isInitialized();
+    const { config } = this.props;
     debug('render menu', this.isMenuOpen(), this._ownLayout);
     return (
       <View style={{flex:1}} onLayout={e => this._onLayout(e)}>
@@ -94,7 +95,7 @@ export default class MenuContext extends Component {
           { this.props.children }
         </View>
         {shouldRenderMenu &&
-          <Backdrop onPress={() => this._onBackdropPress()} />
+          <Backdrop onPress={() => this._onBackdropPress()} zIndex={config.zIndex} />
         }
         {shouldRenderMenu &&
           this._makeOptions(this.state.openedMenu)
@@ -132,11 +133,13 @@ export default class MenuContext extends Component {
   _makeOptions({ instance, triggerLayout, optionsLayout }) {
     const options = instance._getOptions();
     const { renderer } = instance.props;
+    const { config } = this.props;
     const windowLayout = this._ownLayout;
     const { optionsContainerStyle, renderOptionsContainer, customStyles } = options.props;
     const optionsRenderer = renderOptionsContainer || defaultOptionsContainerRenderer;
     const onLayout = e => this._onOptionsLayout(e, instance.getName());
-    const style = [optionsContainerStyle, customStyles.optionsContainer];
+    const zIndexStyle = config.zIndex ? { zIndex: config.zIndex } : {};
+    const style = [zIndexStyle, optionsContainerStyle, customStyles.optionsContainer];
     const layouts = { windowLayout, triggerLayout, optionsLayout };
     const props = { style, onLayout, layouts };
     if (!triggerLayout || !optionsLayout) {
@@ -164,6 +167,14 @@ export default class MenuContext extends Component {
   }
 
 }
+
+MenuContext.propTypes = {
+  config: React.PropTypes.object,
+};
+
+MenuContext.defaultProps = {
+  config: {},
+};
 
 MenuContext.childContextTypes = {
   menuRegistry: React.PropTypes.object,

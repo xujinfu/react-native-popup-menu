@@ -1,6 +1,7 @@
 import React from 'react';
 import { TouchableWithoutFeedback, View } from 'react-native';
-import { render } from './helpers';
+import { render, normalizeStyle } from './helpers';
+const { objectContaining } = jasmine;
 
 jest.dontMock('../src/Backdrop');
 const Backdrop = require('../src/Backdrop').default;
@@ -27,6 +28,22 @@ describe('Backdrop', () => {
     expect(typeof output.props.onPress).toEqual('function');
     output.props.onPress();
     expect(onPressSpy).toHaveBeenCalled();
+  });
+
+  it('should not have z-index', () => {
+    const { output } = render(
+      <Backdrop onPress={createSpy()} />
+    );
+    expect('zIndex' in normalizeStyle(output.props.style)).toEqual(false);
+  });
+
+  it('should have z-index', () => {
+    const { output } = render(
+      <Backdrop onPress={createSpy()} zIndex={5} />
+    );
+    expect(normalizeStyle(output.props.style)).toEqual(objectContaining({
+      zIndex: 5
+    }));
   });
 
 });

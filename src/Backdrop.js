@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 
-const Backdrop = props => (
-  <TouchableWithoutFeedback onPress={props.onPress}>
+const Backdrop = ({onPress, zIndex}) => (
+  <TouchableWithoutFeedback onPress={onPress} style={zIndex ? {zIndex} : {}}>
     <View style={styles.backdrop} />
   </TouchableWithoutFeedback>
 );
