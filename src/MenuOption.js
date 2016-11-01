@@ -25,9 +25,8 @@ export default class MenuOption extends Component {
     }
     return (
       <TouchableHighlight onPress={() => this._onSelect()}
-        style={[defaultStyles.option, customStyles.optionWrapper, style]}
         {...defaultTouchableStyles} {...customStyles.optionTouchable}>
-        <View>
+        <View style={[defaultStyles.option, customStyles.optionWrapper, style]}>
           {text ? <Text style={customStyles.optionText}>{text}</Text> : children}
         </View>
       </TouchableHighlight>
